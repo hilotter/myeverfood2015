@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<head>
+  <title>MyEverFood2015 - Evernote Food に記録し続けた食事集2015 -</title>
+
+  <meta name="description" content="Evernoter Foodに記録し続けた2015年に食べたもの一覧。">
+  <meta name="keywords" content="2015年,食事,Evernote Food">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://everfood2015.hello-world.jp.net">
+  <meta property="og:title" content="MyEverFood2015">
+  <meta property="og:description" content="Evernoter Foodに記録し続けた2015年に食べたもの一覧。">
+  <meta property="og:site_name" content="MyEverFood2015">
+  <meta property="og:image" content="http://everfood2015.hello-world.jp.net/ogp.jpg">
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,  minimum-scale=1.0,  maximum-scale=1.0,  user-scalable=no">
+  <link href='http://fonts.googleapis.com/css?family=Nixie+One' rel='stylesheet' type='text/css'>
+  <style type="text/css">
+    body {
+      font-family: 'Nixie One', cursive;
+      text-align: center;
+    }
+    a {
+      text-decoration: none;
+    }
+    img {
+      margin: 1px;
+    }
+    #gallery {
+      list-style: none;
+      position: relative;
+      float: left;
+    }
+    .food {
+      position: relative;
+      float: left;
+    }
+    .food .hover {
+      width: 100%;
+      height: 100%;
+      display: none;
+      position: absolute;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .food .hover a {
+      padding-top: 45%;
+      width: 100%;
+      height: 100%;
+      display: block;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+<h1>MyEverFood2015</h1>
+
+    <div class="share">
+      <a href="https://twitter.com/share" target="_blank" class="twitter-share-button" data-url="http://everfood2015.hello-world.jp.net/" data-text="MyEverFood2015 - Evernote Food に記録し続けた食事集2015 -" data-lang="ja" data-count="vertical">ツイート</a>
+      <a href="http://b.hatena.ne.jp/entry/http://everfood2015.hello-world.jp.net/" class="hatena-bookmark-button" data-hatena-bookmark-title="MyEverFood2015" data-hatena-bookmark-layout="vertical-balloon" data-hatena-bookmark-lang="ja" title="このエントリーをはてなブックマークに追加"><img src="http://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="http://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+      <script>!function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0], p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);}}(document,  'script',  'twitter-wjs');</script>
+      <div class="fb-like" data-href="http://everfood2015.hello-world.jp.net/" data-layout="box_count" data-action="like" data-show-faces="true" data-share="false"></div>
+      <div id="fb-root"></div>
+      <script>(function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/ja_JP/all.js#xfbml=1&appId=238250016349390";
+        fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));</script>
+    </div>
+
+<ul id="gallery"></ul>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery.lazyload.min.js"></script>
+<script type="text/javascript" src="/js/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="/js/fliplightbox.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $.getJSON('./api.json', function(json) {
+    var i = 0,
+        length = json.length,
+        heredoc,
+        html,
+        created,
+        title,
+        m, d, w, wNames;
+
+    wNames = ['日', '月', '火', '水', '木', '金', '土'];
+
+    for(;i < length; i++) {
+      res = json[i];
+      heredoc = (function() {/*
+<li class="food">
+<div class="hover"><a href="${thumb_url}" class="flipLightBox">${title}<span><b>${title}</b></span></a></div>
+<a href="${url}">
+<img class="lazy" src="/img/white.gif" data-original="${thumb_url}" width="225" height="225" alt="${title}" />
+</a>
+</li>
+      */}).toString().match(/[^]*\/\*([^]*)\*\/.*\}$/)[1];
+
+      created = new Date(res['created']);
+      m = created.getMonth() + 1;
+      d = created.getDate();
+      w = wNames[created.getDay()];
+      title = m + '/' + d + '(' + w + ')' + ' ' + res['title'];
+
+      html = jQuery.tmpl(heredoc, {
+        url: res['images'][0]['url'],
+        thumb_url: res['images'][0]['thumb_url'],
+        title: title,
+        info: title
+      });
+      $('#gallery').append(html);
+    }
+    $('img.lazy').lazyload({
+      threshold : 200,
+      effect: 'fadeIn',
+      effectspeed: 1000
+    });
+    $('.food').hover(function() {
+      $(this).find('.hover').fadeIn();
+    }, function() {
+      $(this).find('.hover').fadeOut();
+    });
+    $('body').flipLightBox();
+  });
+});
+</script>
+</body>
+</html>
